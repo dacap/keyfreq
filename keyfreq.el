@@ -69,7 +69,7 @@ a statistical data."
   :group 'local
   :prefix "keyfreq")
 
-
+;;;###autoload
 (define-minor-mode keyfreq-mode
   "Keyfreq mode records number of times each command was
 called making it possible to access usage statistics through
@@ -443,7 +443,7 @@ The table is not reset, so the values are appended to the table."
 	  (setq l (cdr l)))
 	)))
 
-
+;;;###autoload
 (define-minor-mode keyfreq-autosave-mode
   "Keyfreq Autosave mode automatically saves
 `keyfreq-table' every `keyfreq-autosave-timeout' seconds
