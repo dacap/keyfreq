@@ -1,5 +1,5 @@
+;;; keyfreq.el --- track command frequencies
 ;; -*- coding: utf-8 -*-
-;; keyfreq.el -- track command frequencies
 ;;
 ;; Copyright 2009-2010 by David Capello
 ;; Copyright 2008 by Xah Lee
@@ -485,3 +485,5 @@ value will take effect only after (re)enabling
 
 
 (provide 'keyfreq)
+
+;;; keyfreq.el ends here
