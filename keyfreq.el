@@ -15,6 +15,10 @@
 ;; published by the Free Software Foundation; either version 2 of the
 ;; License, or (at your option) any later version.
 ;;
+;; Version 1.5 - 2013-06 - Matthew Fidler
+;; * Added tracking of commands issued from M-x commands.
+;; * This is tracked in a psuedo-major-mode extended-command
+;;
 ;; Version 1.4 - 2010-09 - David Capello
 ;; * Renamed from command-frequency to keyfreq
 ;; * Now keyfreq-table holds "deltas"
@@ -65,7 +69,7 @@
   "Customization group for keyfreq mode.  This mode stores
 number of times each command was called and provides it as
 a statistical data."
-  :package-version '(keyfreq . "1.4")
+  :package-version '(keyfreq . "1.5")
   :group 'local
   :prefix "keyfreq")
 
@@ -81,8 +85,11 @@ various keyfreq-* functions."
   :group 'keyfreq
 
   (if keyfreq-mode
-      (add-hook 'pre-command-hook 'keyfreq-pre-command-hook)
-    (remove-hook 'pre-command-hook 'keyfreq-pre-command-hook)))
+      (progn
+        (add-hook 'pre-command-hook 'keyfreq-pre-command-hook)
+        (add-hook 'post-command-hook 'keyfreq-post-command-hook))
+    (remove-hook 'pre-command-hook 'keyfreq-pre-command-hook)
+    (remove-hook 'post-command-hook 'keyfreq-post-command-hook)))
 
 
 (defcustom keyfreq-buffer "*frequencies*"
@@ -108,15 +115,30 @@ by default."
   "Hash table storing number of times each command was called in each major mode
 since the last time the frequencies were saved in `keyfreq-file'.")
 
-
 (defun keyfreq-pre-command-hook ()
   "Records command execution in `keyfreq-table' hash."
-
+  (setq keyfreq-last-extended-command-history
+        extended-command-history)
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
       (puthash (cons major-mode command) (if count (1+ count) 1)
 	       keyfreq-table))))
+
+(defvar keyfreq-last-extended-command-history nil
+  "This defines the last `extended-command-history' to capture commands issued to M-x.")
+
+(defun keyfreq-post-command-hook ()
+  "Records changes in `extended-command-history' as a command that was issued."
+  (unless (eq keyfreq-last-extended-command-history
+              extended-command-history)
+    (let ((command (intern-soft (car extended-command-history)))
+          count)
+      (when (and command (commandp command))
+        (setq count (gethash (cons 'extended-command command) keyfreq-table))
+        (puthash (cons 'extended-command command)
+                 (if count (1+ count) 1)
+                 keyfreq-table)))))
 
 
 (defun keyfreq-groups-major-modes (table)
@@ -233,7 +255,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
       ;; Display the table
       (display-message-or-buffer (concat (if major-mode-symbol
-					     (concat "For " (symbol-name major-mode))
+					     (concat "For " (symbol-name major-mode-symbol))
 					   (concat "For all major modes"))
 					 ":\n\n"
 					 formatted-list)
