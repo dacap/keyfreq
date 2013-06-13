@@ -138,7 +138,9 @@ since the last time the frequencies were saved in `keyfreq-file'.")
         (setq count (gethash (cons 'extended-command command) keyfreq-table))
         (puthash (cons 'extended-command command)
                  (if count (1+ count) 1)
-                 keyfreq-table)))))
+                 keyfreq-table))))
+  (setq keyfreq-last-extended-command-history
+        extended-command-history))
 
 
 (defun keyfreq-groups-major-modes (table)
