@@ -427,7 +427,9 @@ if it was successfully merged."
 
 	      ;; Write the new frequencies
 	      (with-temp-file keyfreq-file
-		(prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer))))
+		(let ((print-level nil)
+		      (print-length nil))
+		  (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
 
 	  ;; Release the lock and reset the hash table.
 	  (keyfreq-file-release-lock)
