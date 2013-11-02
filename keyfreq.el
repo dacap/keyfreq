@@ -10,10 +10,10 @@
 ;; Maintainer: David Capello, Xah lee
 ;; Created: 2006
 ;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2 of the
-;; License, or (at your option) any later version.
+;; Keyfreq is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
 ;;
 ;; Version 1.4 - 2010-09 - David Capello
 ;; * Renamed from command-frequency to keyfreq
@@ -60,6 +60,12 @@
 ;; And use keyfreq-show to see how many times you used a command.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;; Commentary:
+;; 
+
+;;; Code:
 
 (if (featurep 'cl-lib)
     (require 'cl-lib)
@@ -124,8 +130,9 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 
 (defun keyfreq-groups-major-modes (table)
-  "Groups major modes by command. Returns a hash table where
-each entry has COMMAND as key and COUNTER as value."
+  "Groups major modes by command.
+Return a hash table where each entry has COMMAND as key and
+COUNTER as value."
 
   (let ((new-table (make-hash-table :test 'equal :size 128)))
     (maphash (lambda (k v)
@@ -135,8 +142,9 @@ each entry has COMMAND as key and COUNTER as value."
 
 
 (defun keyfreq-filter-major-mode (table major-mode)
-  "Leave the frequencies of  the specified major mode. Returns a
-hash table where each entry has COMMAND as key and COUNTER as value."
+  "Leave the frequencies of  the specified major mode.
+Return a hash table where each entry has COMMAND as key and
+COUNTER as value."
 
   (let ((new-table (make-hash-table :test 'equal :size 128)))
     (maphash (lambda (k v)
@@ -147,7 +155,7 @@ hash table where each entry has COMMAND as key and COUNTER as value."
 
 
 (defun keyfreq-used-major-modes (table)
-  "Returns a list with the used major-modes (major modes
+  "Return a list with the used major-modes (major modes
 contained in the TABLE)."
 
   (let ((list))
@@ -189,7 +197,7 @@ less then -LIMIT times will be added."
 
 
 (defun keyfreq-format-list (list &optional func)
-  "Returns formatted string with command usage statistics.
+  "Return formatted string with command usage statistics.
 
 The LIST is the `keyfreq-table' converted to a list using the `keyfreq-list'.
 
@@ -257,7 +265,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-html (filename &optional confirm)
-  "Saves an HTML file with all the statistics of each mode."
+  "Save an HTML file as FILENAME with all the statistics of each mode."
 
   (interactive
    (list (if buffer-file-name
@@ -319,7 +327,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-json-encode (table)
-  "Returns a JSON representation of the table of frequencies."
+  "Return a JSON representation of the table of frequencies."
   (require 'json)
   (let ((commands-indexes (make-hash-table :test 'equal :size 128))
 	commands-list frequencies-matrix i)
@@ -352,7 +360,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-json (filename &optional confirm)
-  "Saves a file with a JSON structure of the data."
+  "Save a file (as FILENAME) with a JSON structure of the data."
 
   (interactive
    (list (if buffer-file-name
@@ -413,8 +421,8 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-table-save (table)
-  "Appends all values from the specified TABLE into the
-`keyfreq-file' as a sexp of an alist. Then resets the TABLE
+  "Append all values from the specified TABLE into the
+`keyfreq-file' as a sexp of an alist.  Then resets the TABLE
 if it was successfully merged."
 
   ;; Check that the lock file does not exist
@@ -442,7 +450,7 @@ if it was successfully merged."
 
 
 (defun keyfreq-table-load (table)
-  "Loads all values from the `keyfreq-file' and adds them in the TABLE.
+  "Load all values from the `keyfreq-file' and add them in the TABLE.
 The table is not reset, so the values are appended to the table."
 
   ;; Does `keyfreq-file' exist?
