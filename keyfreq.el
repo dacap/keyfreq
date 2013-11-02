@@ -159,13 +159,14 @@ contained in the TABLE)."
 
 (defun keyfreq-list (table &optional reverse limit)
   "Return a cons which car is sum of times any command was used
-and cdr is a list of (command . count) pairs.  If REVERSE is nil
-sorts it starting from the most used command; if it is 'no-sort
-the list is not sorted; if it is non-nil and not 'no-sort sorts
-it from the least used commands.  If LIMIT is positive number
-only commands which were used more then LIMIT times will be
-added.  If it is negative number only commands which were used
-less then -LIMIT times will be added."
+and cdr is a list of (command . count) pairs.
+
+If REVERSE is nil, sort it starting from the most used command;
+if it is `no-sort' the list is not sorted; if it is non-nil and
+not `no-sort', sort it from the least used commands.  If LIMIT is
+a positive number, only commands which were used more then LIMIT
+times will be added.  If it is a negative number, only commands
+which were used less then -LIMIT times will be added."
 
   (let (l (sum 0))
     (maphash
