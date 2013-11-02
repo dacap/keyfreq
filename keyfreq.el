@@ -65,6 +65,7 @@
 (if (featurep 'cl-lib)
     (require 'cl-lib)
   (require 'cl))
+;; (require 'json)?
 
 (defgroup keyfreq nil
   "Customization group for Keyfreq mode.
@@ -225,20 +226,18 @@ called, percentage usage and the command."
              ", "))
 
 (defun keyfreq-show (&optional major-mode-symbol)
-  "Show command usage statistics in `keyfreq-buffer' using
-`keyfreq-string' function.
+  "Show command usage statistics in `keyfreq-buffer'.
 
 If MAJOR-MODE-SYMBOL is given, the function shows the statistics
-for that particular major-mode only.
+for that particular major mode only.
 
-With universal argument, the major-mode of the current
-buffer is used as MAJOR-MODE-SYMBOL argument."
-
+With a universal argument, the major-mode of the current buffer
+is used as MAJOR-MODE-SYMBOL argument."
   (interactive (list (cond (current-prefix-arg major-mode)
 			   (t nil))))
 
   (let ((table (copy-hash-table keyfreq-table)))
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (let* ((list (keyfreq-list
@@ -287,7 +286,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 		     (insert "</tbody>\n")
 		     (insert "</table>\n"))))
 
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (with-temp-file filename
@@ -373,7 +372,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
   (let ((table (copy-hash-table keyfreq-table)))
 
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (with-temp-file filename
