@@ -57,7 +57,7 @@
 ;;   (keyfreq-mode 1)
 ;;   (keyfreq-autosave-mode 1)
 ;;
-;; And use keyfreq-show to see how many times you used a command.
+;; And use `keyfreq-show' to see how many times you used a command.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -72,9 +72,9 @@
   (require 'cl))
 
 (defgroup keyfreq nil
-  "Customization group for keyfreq mode.  This mode stores
-number of times each command was called and provides it as
-a statistical data."
+  "Customization group for Keyfreq mode.
+This mode stores number of times each command was called and
+provides it as a statistical data."
   :package-version '(keyfreq . "1.4")
   :group 'local
   :prefix "keyfreq")
@@ -120,8 +120,7 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 
 (defun keyfreq-pre-command-hook ()
-  "Records command execution in `keyfreq-table' hash."
-
+  "Record command execution in `keyfreq-table' hash."
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
@@ -130,10 +129,9 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 
 (defun keyfreq-groups-major-modes (table)
-  "Groups major modes by command.
+  "Group major modes in TABLE by command.
 Return a hash table where each entry has COMMAND as key and
 COUNTER as value."
-
   (let ((new-table (make-hash-table :test 'equal :size 128)))
     (maphash (lambda (k v)
 	       (puthash (cdr k) (+ (gethash (cdr k) new-table 0) v) new-table))
@@ -142,7 +140,7 @@ COUNTER as value."
 
 
 (defun keyfreq-filter-major-mode (table major-mode)
-  "Leave the frequencies of  the specified major mode.
+  "Leave the frequencies of the specified major mode.
 Return a hash table where each entry has COMMAND as key and
 COUNTER as value."
 
@@ -166,7 +164,7 @@ contained in the TABLE)."
 
 
 (defun keyfreq-list (table &optional reverse limit)
-  "Returns a cons which car is sum of times any command was used
+  "Return a cons which car is sum of times any command was used
 and cdr is a list of (command . count) pairs.  If REVERSE is nil
 sorts it starting from the most used command; if it is 'no-sort
 the list is not sorted; if it is non-nil and not 'no-sort sorts
@@ -232,7 +230,7 @@ called, percentage usage and the command."
              ", "))
 
 (defun keyfreq-show (&optional major-mode-symbol)
-  "Shows command usage statistics in `keyfreq-buffer' using
+  "Show command usage statistics in `keyfreq-buffer' using
 `keyfreq-string' function.
 
 If MAJOR-MODE-SYMBOL is given, the function shows the statistics
