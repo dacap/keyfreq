@@ -47,7 +47,8 @@
 ;; Version 0.1 - 2006
 ;; - First version by Ryan Yeske. A quick hack of about 40 lines.
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Commentary:
 ;;
 ;; HOW TO USE IT?
 ;;
@@ -59,12 +60,6 @@
 ;;
 ;; And use `keyfreq-show' to see how many times you used a command.
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;;; Commentary:
-;; 
-
 ;;; Code:
 
 (if (featurep 'cl-lib)
@@ -153,9 +148,8 @@ COUNTER as value."
 
 
 (defun keyfreq-used-major-modes (table)
-  "Return a list with the used major-modes (major modes
+  "Return a list with the used major modes (major modes
 contained in the TABLE)."
-
   (let ((list))
     (maphash (lambda (k v)
 	       (add-to-list 'list (car k)))
