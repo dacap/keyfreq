@@ -61,6 +61,10 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(if (featurep 'cl-lib)
+    (require 'cl-lib)
+  (require 'cl))
+
 (defgroup keyfreq nil
   "Customization group for keyfreq mode.  This mode stores
 number of times each command was called and provides it as
