@@ -379,6 +379,25 @@ is used as MAJOR-MODE-SYMBOL argument."
       (insert (keyfreq-json-encode table)))))
 
 
+(defun keyfreq-reset ()
+   "Reset all statistics including those in the file."
+
+  (interactive)
+  ;; clear the hash table
+  (clrhash keyfreq-table)
+  ;; Deal with the file
+  (when (keyfreq-file-is-unlocked)
+    ;; Lock the file
+    (keyfreq-file-claim-lock)
+    ;; Check that we have the lock
+    (if (eq (keyfreq-file-owner) (emacs-pid))
+      ;; if the file exists just delete it
+      (if (file-exists-p keyfreq-file)
+        (delete-file keyfreq-file))
+    ;; Release the lock.
+    (keyfreq-file-release-lock))))
+
+
 (defun keyfreq-file-owner ()
   "Return the PID of the Emacs process that owns the table file lock file."
   (let (owner)
