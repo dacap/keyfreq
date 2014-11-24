@@ -15,6 +15,10 @@
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
 ;;
+;; Version 1.5 - 2014-11 - David Capello
+;; * Support cl-lib or cl
+;; * Minor doc fixes
+;;
 ;; Version 1.4 - 2010-09 - David Capello
 ;; * Renamed from command-frequency to keyfreq
 ;; * Now keyfreq-table holds "deltas"
@@ -71,7 +75,7 @@
   "Customization group for Keyfreq mode.
 This mode stores number of times each command was called and
 provides it as a statistical data."
-  :package-version '(keyfreq . "1.4")
+  :package-version '(keyfreq . "1.5")
   :group 'local
   :prefix "keyfreq")
 
