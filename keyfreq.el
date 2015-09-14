@@ -1,7 +1,7 @@
 ;;; keyfreq.el --- track command frequencies
 ;; -*- coding: utf-8 -*-
 ;;
-;; Copyright 2009-2010 by David Capello
+;; Copyright 2009-2010, 2015 by David Capello
 ;; Copyright 2008 by Xah Lee
 ;; Copyright 2006 by Michal Nazarewicz
 ;; Copyright 2006 by Ryan Yeske
@@ -387,17 +387,23 @@ is used as MAJOR-MODE-SYMBOL argument."
   "Return the PID of the Emacs process that owns the table file lock file."
   (let (owner)
     (and (file-exists-p keyfreq-file-lock)
-	 (with-temp-buffer
-	   (insert-file-contents-literally keyfreq-file-lock)
-	   (goto-char (point-min))
-	   (setq owner (read (current-buffer)))
-	   (integerp owner))
+	 (ignore-errors
+	   (with-temp-buffer
+	     (insert-file-contents-literally keyfreq-file-lock)
+	     (goto-char (point-min))
+	     (setq owner (read (current-buffer)))
+	     (integerp owner)))
 	 owner)))
 
 
 (defun keyfreq-file-claim-lock ()
-  (write-region (number-to-string (emacs-pid)) nil
-		keyfreq-file-lock nil 'nomessage))
+  (let ((bak (symbol-function 'ask-user-about-lock)))
+    (fset 'ask-user-about-lock (lambda (file opponent) nil))
+    (unwind-protect
+	(write-region (number-to-string (emacs-pid)) nil
+		      keyfreq-file-lock nil 'nomessage)
+	(fset 'ask-user-about-lock bak))))
+
 
 
 (defun keyfreq-file-release-lock ()
