@@ -79,7 +79,7 @@
   "Customization group for Keyfreq mode.
 This mode stores number of times each command was called and
 provides it as a statistical data."
-  :package-version '(keyfreq . "1.5")
+  :package-version '(keyfreq . "1.6")
   :group 'local
   :prefix "keyfreq")
 
