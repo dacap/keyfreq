@@ -15,6 +15,10 @@
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
 ;;
+;; Version 1.6 - 2015-09 - David Capello
+;; * Added keyfreq-reset thanks to @w-vi
+;; * Fixed issue running multiple instances of Emacs 24.5
+;;
 ;; Version 1.5 - 2014-11 - David Capello
 ;; * Support cl-lib or cl
 ;; * Minor doc fixes
@@ -384,22 +388,23 @@ is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-reset ()
-   "Reset all statistics including those in the file."
-
+  "Reset all statistics including those in the file."
   (interactive)
-  ;; clear the hash table
-  (clrhash keyfreq-table)
-  ;; Deal with the file
-  (when (keyfreq-file-is-unlocked)
-    ;; Lock the file
-    (keyfreq-file-claim-lock)
-    ;; Check that we have the lock
-    (if (eq (keyfreq-file-owner) (emacs-pid))
-      ;; if the file exists just delete it
-      (if (file-exists-p keyfreq-file)
-        (delete-file keyfreq-file))
-    ;; Release the lock.
-    (keyfreq-file-release-lock))))
+  (when (yes-or-no-p (concat "Delete keyfreq file? You will lost all your stats. "))
+    ;; clear the hash table
+    (clrhash keyfreq-table)
+    ;; Deal with the file
+    (when (keyfreq-file-is-unlocked)
+      ;; Lock the file
+      (keyfreq-file-claim-lock)
+      ;; Check that we have the lock
+      (if (eq (keyfreq-file-owner) (emacs-pid))
+	  (unwind-protect
+	      ;; if the file exists just delete it
+	      (if (file-exists-p keyfreq-file)
+		  (delete-file keyfreq-file))
+	    ;; Release the lock.
+	    (keyfreq-file-release-lock))))))
 
 
 (defun keyfreq-file-owner ()
