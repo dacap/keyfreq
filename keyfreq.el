@@ -470,9 +470,8 @@ if it was successfully merged."
 		  (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
 
 	  ;; Release the lock and reset the hash table.
-	  (keyfreq-file-release-lock)
-	  (clrhash table))
-      )))
+	  (clrhash table)
+	  (keyfreq-file-release-lock)))))
 
 
 (defun keyfreq-table-load (table)
