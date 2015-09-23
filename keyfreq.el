@@ -15,6 +15,9 @@
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
 ;;
+;; Version 1.7 - 2015-09 - David Capello
+;; * Avoid accumulating key frequency if keyfreq-file-release-lock fails
+;;
 ;; Version 1.6 - 2015-09 - David Capello
 ;; * Added keyfreq-reset thanks to @w-vi
 ;; * Fixed issue running multiple instances of Emacs 24.5
@@ -79,7 +82,7 @@
   "Customization group for Keyfreq mode.
 This mode stores number of times each command was called and
 provides it as a statistical data."
-  :package-version '(keyfreq . "1.6")
+  :package-version '(keyfreq . "1.7")
   :group 'local
   :prefix "keyfreq")
 
