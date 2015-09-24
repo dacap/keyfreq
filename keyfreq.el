@@ -472,9 +472,14 @@ does nothing if the table cannot be saved."
 
 		    ;; Write the new frequencies
 		    (with-temp-file keyfreq-file
-		      (let ((print-level nil)
-			    (print-length nil))
-			(prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
+		      (let ((l (cdr (keyfreq-list table 'no-sort))))
+			(insert "(")
+			(dolist (item l)
+			  (prin1 item (current-buffer))
+			  ;; Easy for git to track if every command is
+			  ;; one line
+			  (insert "\n"))
+			(insert ")"))))
 
 		;; Reset the hash table, enable the 'done' flag, and
 		;; release the lock.
