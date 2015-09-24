@@ -445,32 +445,53 @@ is used as MAJOR-MODE-SYMBOL argument."
   (not (file-exists-p keyfreq-file-lock)))
 
 
-(defun keyfreq-table-save (table)
+(defun keyfreq-table-save (table &optional mustsave)
   "Append all values from the specified TABLE into the
 `keyfreq-file' as a sexp of an alist.  Then resets the TABLE
-if it was successfully merged."
+if it was successfully merged.
 
-  ;; Check that the lock file does not exist
-  (when (keyfreq-file-is-unlocked)
-    ;; Lock the file
-    (keyfreq-file-claim-lock)
+If MUSTSAVE is t, this function tries to save the table until it
+gets the lock and successfully saves it.  If MUSTSAVE is nil, it
+does nothing if the table cannot be saved."
 
-    ;; Check that we have the lock
-    (if (eq (keyfreq-file-owner) (emacs-pid))
-	(unwind-protect
-	    (progn
-	      ;; Load values and merge them with the current keyfreq-table
-	      (keyfreq-table-load table)
+  ;; Avoid adding nothing to the file
+  (if (> (hash-table-count table) 0)
+    (let (done)
+      ;; Check that the lock file doesn't exist
+      (while (not done)
+	(when (keyfreq-file-is-unlocked)
+	  ;; Lock the file
+	  (keyfreq-file-claim-lock)
 
-	      ;; Write the new frequencies
-	      (with-temp-file keyfreq-file
-		(let ((print-level nil)
-		      (print-length nil))
-		  (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
+	  ;; Check that we have the lock
+	  (if (eq (keyfreq-file-owner) (emacs-pid))
+	      (unwind-protect
+		  (progn
+		    ;; Load values and merge them with the current keyfreq-table
+		    (keyfreq-table-load table)
 
-	  ;; Release the lock and reset the hash table.
-	  (clrhash table)
-	  (keyfreq-file-release-lock)))))
+		    ;; Write the new frequencies
+		    (with-temp-file keyfreq-file
+		      (let ((print-level nil)
+			    (print-length nil))
+			(prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
+
+		;; Reset the hash table, enable the 'done' flag, and
+		;; release the lock.
+		(clrhash table)
+		(setq done t)
+		(keyfreq-file-release-lock))))
+
+	(if (and (not done) mustsave)
+	    ;; If we must save the file right now, we'll just keep
+	    ;; trying until we can get the lock.  So we can sleep some
+	    ;; milliseconds for the next while-loop cycle.
+	    (sleep-for 0.1)
+	  ;; If we can wait to the next timer's timeout, just enable
+	  ;; the 'done' flag to break the while-loop.
+	  (setq done t))
+
+	))))
 
 
 (defun keyfreq-table-load (table)
@@ -492,6 +513,7 @@ The table is not reset, so the values are appended to the table."
 	  (setq l (cdr l)))
 	)))
 
+
 ;;;###autoload
 (define-minor-mode keyfreq-autosave-mode
   "Keyfreq Autosave mode automatically saves
@@ -512,8 +534,9 @@ and when emacs is killed."
 	(setq keyfreq-autosave--timer
 	      (run-at-time t keyfreq-autosave-timeout
 			   'keyfreq-autosave--do))
-	(add-hook 'kill-emacs-hook 'keyfreq-autosave--do))
-    (remove-hook 'kill-emacs-hook 'keyfreq-autosave--do)))
+	(add-hook 'kill-emacs-hook 'keyfreq-mustsave--do))
+    (keyfreq-mustsave--do)
+    (remove-hook 'kill-emacs-hook 'keyfreq-mustsave--do)))
 
 
 (defcustom keyfreq-autosave-timeout 600
@@ -531,6 +554,11 @@ value will take effect only after (re)enabling
 (defun keyfreq-autosave--do ()
   "Function executed periodically to save the `keyfreq-table' in `keyfreq-file'."
   (keyfreq-table-save keyfreq-table))
+
+
+(defun keyfreq-mustsave--do ()
+  "Function executed when we close Emacs."
+  (keyfreq-table-save keyfreq-table t))
 
 
 (provide 'keyfreq)
