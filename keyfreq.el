@@ -424,13 +424,9 @@ is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-file-claim-lock ()
-  (let ((bak (symbol-function 'ask-user-about-lock)))
-    (fset 'ask-user-about-lock (lambda (file opponent) nil))
-    (unwind-protect
-	(write-region (number-to-string (emacs-pid)) nil
-		      keyfreq-file-lock nil 'nomessage)
-	(fset 'ask-user-about-lock bak))))
-
+  (ignore-errors
+    (write-region (number-to-string (emacs-pid)) nil
+		  keyfreq-file-lock nil 'nomessage nil 'excl)))
 
 
 (defun keyfreq-file-release-lock ()
