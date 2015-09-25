@@ -125,7 +125,7 @@ by default."
   "Hash table storing number of times each command was called in each major mode
 since the last time the frequencies were saved in `keyfreq-file'.")
 
-(defvar keyfreq-excluded-commands '(self-insert-command)
+(defvar keyfreq-excluded-commands '()
   "List of commands excluded by keyfreq.")
 
 (defun keyfreq-pre-command-hook ()
