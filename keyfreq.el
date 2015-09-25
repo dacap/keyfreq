@@ -125,14 +125,18 @@ by default."
   "Hash table storing number of times each command was called in each major mode
 since the last time the frequencies were saved in `keyfreq-file'.")
 
+(defvar keyfreq-excluded-commands '(self-insert-command)
+  "List of commands excluded by keyfreq.")
 
 (defun keyfreq-pre-command-hook ()
   "Record command execution in `keyfreq-table' hash."
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
-      (puthash (cons major-mode command) (if count (1+ count) 1)
-	       keyfreq-table))))
+      (unless (memq command keyfreq-excluded-commands)
+        (puthash (cons major-mode command) (if count (1+ count) 1)
+                 keyfreq-table)
+        ))))
 
 
 (defun keyfreq-groups-major-modes (table)
@@ -514,7 +518,8 @@ The table is not reset, so the values are appended to the table."
 	;; Add the values in the table
 	(while (and (listp l) l)
 	  (if (listp (car l))
-	      (puthash (caar l) (+ (gethash (caar l) table 0) (cdar l)) table))
+          (unless (memq (cdr (caar l)) keyfreq-excluded-commands)
+            (puthash (caar l) (+ (gethash (caar l) table 0) (cdar l)) table)))
 	  (setq l (cdr l)))
 	)))
 
