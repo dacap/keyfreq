@@ -571,6 +571,13 @@ value will take effect only after (re)enabling
   (keyfreq-table-save keyfreq-table t))
 
 
+;;;###autoload
+(defun keyfreq-save-now ()
+  "Save keyfreq data now."
+  (interactive)
+  (keyfreq-mustsave--do)
+  (message "keyfreq data saved into %s" keyfreq-file))
+
 (provide 'keyfreq)
 
 ;;; keyfreq.el ends here
