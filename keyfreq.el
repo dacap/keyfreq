@@ -73,9 +73,12 @@
 ;;
 ;;; Code:
 
-(if (featurep 'cl-lib)
-    (require 'cl-lib)
-  (require 'cl))
+(if (not (featurep 'cl-lib))
+    (progn
+      (require 'cl)
+      ;; fix conflict name
+      (defalias 'cl-reduce 'reduce))
+  (require 'cl-lib))
 ;; (require 'json)?
 
 (defgroup keyfreq nil
@@ -219,7 +222,7 @@ for each entry with three arguments: number of times command was
 called, percentage usage and the command."
   (let* ((sum (car list))
          (max-len
-          (reduce (lambda (a b) (max a (length (symbol-name (car b)))))
+          (cl-reduce (lambda (a b) (max a (length (symbol-name (car b)))))
                   (cdr list)
                   :initial-value 0)))
     (mapconcat
