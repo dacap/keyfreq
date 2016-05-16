@@ -10,6 +10,9 @@
 ;; Maintainer: David Capello, Xah lee
 ;; Created: 2006
 ;;
+;; Package-Requires: ((cl-lib "0.5"))
+;;
+;;
 ;; Keyfreq is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 3 of the License, or
