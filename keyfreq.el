@@ -601,7 +601,7 @@ value will take effect only after (re)enabling
 
 (defun keyfreq-merge--do (file-A file-B file-C)
   "Function called by `keyfreq-merge'"
-    (let ((table (copy-hash-table keyfreq-table)))
+  (let ((table (make-hash-table :test 'equal :size 128)))
       (keyfreq-table-load table file-A)
       (keyfreq-table-load table file-B)
       (keyfreq-table-save table t file-C)))
