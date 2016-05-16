@@ -111,14 +111,14 @@ various keyfreq-* functions."
   :type 'string)
 
 
-(defcustom keyfreq-file "~/.emacs.keyfreq"
+(defcustom keyfreq-file "~/.emacs.d/keyfreq"
   "File `keyfreq-table' is saved to/loaded from by
 `keyfreq-table-save' and `keyfreq-table-load' functions
 by default."
   :group 'keyfreq
   :type 'file)
 
-(defcustom keyfreq-file-lock "~/.emacs.keyfreq.lock"
+(defcustom keyfreq-file-lock "~/.emacs.d/keyfreq.lock"
   "Lock file to update the `keyfreq-file'."
   :group 'keyfreq
   :type 'file)
