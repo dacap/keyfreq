@@ -464,6 +464,7 @@ does nothing if the table cannot be saved.
 If KEYFREQ-FILE-LOCAL is nil, then the default value is `keyfreq-file'.
 Else it uses this value of file to save TABLE, not considering the stats already store."
 
+  (let (load-previous-stats)
   ;; default argument
   (setq load-previous-stats nil)
   (if (not keyfreq-file-local)
@@ -514,7 +515,7 @@ Else it uses this value of file to save TABLE, not considering the stats already
 	  ;; the 'done' flag to break the while-loop.
 	  (setq done t))
 
-	))))
+	)))))
 
 
 (defun keyfreq-table-load (table &optional keyfreq-file-local)
@@ -525,7 +526,7 @@ If KEYFREQ-FILE-LOCAL is nil, then the default value is `keyfreq-file'.
 Else it uses this value of file to load TABLE."
 
   ;; default argument
-  (unless (not keyfreq-file-local) (setq keyfreq-file-local keyfreq-file))
+  (unless keyfreq-file-local (setq keyfreq-file-local keyfreq-file))
 
   ;; Does `keyfreq-file' exist?
   (if (file-exists-p keyfreq-file-local)
