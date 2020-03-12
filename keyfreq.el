@@ -114,14 +114,14 @@ various keyfreq-* functions."
   :type 'string)
 
 
-(defcustom keyfreq-file "~/.emacs.keyfreq"
+(defcustom keyfreq-file "~/.emacs.d/keyfreq"
   "File `keyfreq-table' is saved to/loaded from by
 `keyfreq-table-save' and `keyfreq-table-load' functions
 by default."
   :group 'keyfreq
   :type 'file)
 
-(defcustom keyfreq-file-lock "~/.emacs.keyfreq.lock"
+(defcustom keyfreq-file-lock "~/.emacs.d/keyfreq.lock"
   "Lock file to update the `keyfreq-file'."
   :group 'keyfreq
   :type 'file)
@@ -455,14 +455,25 @@ is used as MAJOR-MODE-SYMBOL argument."
   (not (file-exists-p keyfreq-file-lock)))
 
 
-(defun keyfreq-table-save (table &optional mustsave)
+(defun keyfreq-table-save (table &optional mustsave keyfreq-file-local)
   "Append all values from the specified TABLE into the
 `keyfreq-file' as a sexp of an alist.  Then resets the TABLE
 if it was successfully merged.
 
 If MUSTSAVE is t, this function tries to save the table until it
 gets the lock and successfully saves it.  If MUSTSAVE is nil, it
-does nothing if the table cannot be saved."
+does nothing if the table cannot be saved.
+
+If KEYFREQ-FILE-LOCAL is nil, then the default value is `keyfreq-file'.
+Else it uses this value of file to save TABLE, not considering the stats already store."
+
+  (let (load-previous-stats)
+  ;; default argument
+  (setq load-previous-stats nil)
+  (if (not keyfreq-file-local)
+    (progn
+      (setq keyfreq-file-local keyfreq-file)
+      (setq load-previous-stats t)))
 
   ;; Avoid adding nothing to the file
   (if (> (hash-table-count table) 0)
@@ -478,10 +489,11 @@ does nothing if the table cannot be saved."
 	      (unwind-protect
 		  (progn
 		    ;; Load values and merge them with the current keyfreq-table
-		    (keyfreq-table-load table)
+            (if load-previous-stats
+                (keyfreq-table-load table))
 
 		    ;; Write the new frequencies
-		    (with-temp-file keyfreq-file
+		    (with-temp-file keyfreq-file-local
 		      (let ((l (cdr (keyfreq-list table 'no-sort))))
 			(insert "(")
 			(dolist (item l)
@@ -506,18 +518,24 @@ does nothing if the table cannot be saved."
 	  ;; the 'done' flag to break the while-loop.
 	  (setq done t))
 
-	))))
+	)))))
 
 
-(defun keyfreq-table-load (table)
+(defun keyfreq-table-load (table &optional keyfreq-file-local)
   "Load all values from the `keyfreq-file' and add them in the TABLE.
-The table is not reset, so the values are appended to the table."
+The table is not reset, so the values are appended to the table.
+
+If KEYFREQ-FILE-LOCAL is nil, then the default value is `keyfreq-file'.
+Else it uses this value of file to load TABLE."
+
+  ;; default argument
+  (unless keyfreq-file-local (setq keyfreq-file-local keyfreq-file))
 
   ;; Does `keyfreq-file' exist?
-  (if (file-exists-p keyfreq-file)
+  (if (file-exists-p keyfreq-file-local)
       ;; Load sexp
       (let ((l (with-temp-buffer
-		 (insert-file-contents keyfreq-file)
+		 (insert-file-contents keyfreq-file-local)
 		 (goto-char (point-min))
 		 (read (current-buffer)))))
 
@@ -583,6 +601,38 @@ value will take effect only after (re)enabling
   (interactive)
   (keyfreq-mustsave--do)
   (message "keyfreq data saved into %s" keyfreq-file))
+
+(defun keyfreq-merge--do (file-A file-B file-C)
+  "Function called by `keyfreq-merge'"
+  (let ((table (make-hash-table :test 'equal :size 128)))
+      (keyfreq-table-load table file-A)
+      (keyfreq-table-load table file-B)
+      (keyfreq-table-save table t file-C)))
+
+(defun keyfreq-merge ()
+  "Merge two `keyfreq-file'.
+
+Means read two `keyfreq-file', append them, re-evaluate the stats, and finally save the result.
+"
+  (interactive)
+  (let ((file-A)
+        (file-B)
+        (file-C))
+    (setq file-A (read-file-name
+                  (format "File-A to merge (default %s) : " keyfreq-file)
+                  default-directory
+                  keyfreq-file))
+    (setq file-B (read-file-name
+                  (format "File-B to merge : ")
+                  default-directory
+                  keyfreq-file))
+    (setq file-C (read-file-name
+                  (format "File-C to save (default %s) : " keyfreq-file)
+                  default-directory
+                  keyfreq-file))
+    (keyfreq-merge--do file-A file-B file-C)
+  (message (format "keyfreq statistics merged: from %s and %s into %s" file-A file-B file-C))))
+
 
 (provide 'keyfreq)
 
