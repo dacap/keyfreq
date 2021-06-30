@@ -141,12 +141,12 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 (defun keyfreq-match-p (cmd)
   "Return t if CMD in `keyfreq-excluded-commands' or match `keyfreq-excluded-regexp'."
-
   ;; HACK Inspire by `consult--regexp-filter'
   (let ((filter (mapconcat (lambda (x) (concat "\\(?:" x "\\)"))
                            keyfreq-excluded-regexp "\\|")))
     (or (memq cmd keyfreq-excluded-commands)
-        (string-match-p filter (symbol-name cmd)))))
+        (when keyfreq-excluded-regexp
+          (string-match-p filter (symbol-name cmd))))))
 
 
 (defun keyfreq-pre-command-hook ()
