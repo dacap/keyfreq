@@ -417,7 +417,7 @@ is used as MAJOR-MODE-SYMBOL argument."
 (defun keyfreq-reset ()
   "Reset all statistics including those in the file."
   (interactive)
-  (when (yes-or-no-p (concat "Delete keyfreq file? You will lost all your stats. "))
+  (when (yes-or-no-p (concat "Delete keyfreq file? You will lose all your stats. "))
     ;; clear the hash table
     (clrhash keyfreq-table)
     ;; Deal with the file
