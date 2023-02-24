@@ -140,7 +140,8 @@ since the last time the frequencies were saved in `keyfreq-file'.")
   "List of commands excluded by keyfreq.")
 
 (defun keyfreq-match-p (cmd)
-  "Return t if CMD in `keyfreq-excluded-commands' or match `keyfreq-excluded-regexp'."
+  "Return t if CMD in `keyfreq-excluded-commands' or match
+`keyfreq-excluded-regexp'."
   ;; HACK Inspire by `consult--regexp-filter'
   (let ((filter (mapconcat (lambda (x) (concat "\\(?:" x "\\)"))
                            keyfreq-excluded-regexp "\\|")))
@@ -232,7 +233,7 @@ The LIST is the `keyfreq-table' converted to a list using the `keyfreq-list'.
 
 If FUNC is nil each line contains number of times command was
 called and the command; if it is t percentage usage is added in
-the middle; if it is 'raw each line will contain number an
+the middle; if it is \\='raw each line will contain number an
 command separated by single line (with no formatting) otherwise
 FUNC must be a function returning a string which will be called
 for each entry with three arguments: number of times command was
