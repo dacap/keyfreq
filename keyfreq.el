@@ -480,7 +480,7 @@ does nothing if the table cannot be saved."
 
   ;; Avoid adding nothing to the file
   (if (> (hash-table-count table) 0)
-    (let (done)
+    (let ((done))
       ;; Check that the lock file doesn't exist
       (while (not done)
 	(when (keyfreq-file-is-unlocked)
