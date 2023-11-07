@@ -436,7 +436,7 @@ is used as MAJOR-MODE-SYMBOL argument."
 
 (defun keyfreq-file-owner ()
   "Return the PID of the Emacs process that owns the table file lock file."
-  (let (owner)
+  (let ((owner))
     (and (file-exists-p keyfreq-file-lock)
 	 (ignore-errors
 	   (with-temp-buffer
